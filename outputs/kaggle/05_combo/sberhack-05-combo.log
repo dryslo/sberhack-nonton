@@ -1,0 +1,31 @@
+[{"stream_name":"stdout","time":8.566659186,"data":"python 3.13.15 | pandas 2.3.3, numpy 2.1.3, catboost 1.2.10, IPython 7.34.0, nbclient 0.5.13\n"}
+,{"stream_name":"stderr","time":9.929194218,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":9.929234912,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":9.929240275,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":9.929244023999999,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":10.53719204,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":10.537218571,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":10.537223122,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":10.537226767,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":24.047140794,"data":"ячейка 1/4 готова\n"}
+,{"stream_name":"stdout","time":24.059414025,"data":"ячейка 2/4 готова\n"}
+,{"stream_name":"stdout","time":95.679924339,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":95.699075025,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":95.700654938,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":217.86206813,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":217.879133716,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":217.881133318,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":359.642313531,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":359.658854873,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":398.766435955,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":398.783086069,"data":"[LightGBM] [Warning] Met negative value in categorical features, will convert it to NaN\n"}
+,{"stream_name":"stdout","time":929.031309102,"data":"ячейка 3/4 готова\n"}
+,{"stream_name":"stdout","time":929.060939707,"data":"ячейка 4/4 готова\n"}
+,{"stream_name":"stdout","time":932.710472741,"data":"готово; ячеек с ошибкой: 0\n"}
+,{"stream_name":"stderr","time":934.993967209,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":934.994024722,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":935.172440342,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":935.172476643,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":935.941450908,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":936.439581317,"data":"[NbConvertApp] Writing 551994 bytes to __results__.html\n"}
+]

@@ -1,0 +1,21 @@
+[{"stream_name":"stdout","time":8.995421446,"data":"python 3.13.15 | pandas 2.3.3, numpy 2.1.3, catboost 1.2.10, IPython 7.34.0, nbclient 0.5.13\n"}
+,{"stream_name":"stderr","time":10.618469187,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":10.618510161,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":10.618528812,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":10.618533228,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":11.297436896,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.297466263,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.297471424,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.297475778999999,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":24.997763293,"data":"ячейка 1/4 готова\n"}
+,{"stream_name":"stdout","time":25.008008795,"data":"ячейка 2/4 готова\n"}
+,{"stream_name":"stdout","time":240.089546997,"data":"ячейка 3/4 готова\n"}
+,{"stream_name":"stdout","time":240.117831221,"data":"ячейка 4/4 готова\n"}
+,{"stream_name":"stdout","time":241.237635007,"data":"готово; ячеек с ошибкой: 0\n"}
+,{"stream_name":"stderr","time":243.450027168,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":243.450055904,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":243.619751744,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":243.619785587,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":244.397475742,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":244.919915413,"data":"[NbConvertApp] Writing 550152 bytes to __results__.html\n"}
+]

@@ -1,0 +1,30 @@
+[{"stream_name":"stdout","time":6.945591287,"data":"python 3.13.15 | pandas 2.3.3, numpy 2.1.3, catboost 1.2.10, IPython 7.34.0, nbclient 0.5.13\n"}
+,{"stream_name":"stderr","time":7.694574837,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.694627592,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.694633513,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.694637666,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.27182731,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.27187086,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.271876492,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.271880301,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":10.457035711,"data":"ячейка 1/13 готова\n"}
+,{"stream_name":"stdout","time":10.489039295,"data":"ячейка 2/13 готова\n"}
+,{"stream_name":"stdout","time":10.498414049,"data":"ячейка 3/13 готова\n"}
+,{"stream_name":"stdout","time":246.299066007,"data":"ячейка 4/13 готова\n"}
+,{"stream_name":"stdout","time":246.329207149,"data":"ячейка 5/13 готова\n"}
+,{"stream_name":"stdout","time":247.330937893,"data":"ячейка 6/13 готова\n"}
+,{"stream_name":"stdout","time":739.92628914,"data":"ячейка 7/13 готова\n"}
+,{"stream_name":"stdout","time":739.941480491,"data":"ячейка 8/13 готова\n"}
+,{"stream_name":"stdout","time":1241.677703083,"data":"ячейка 9/13 готова\n"}
+,{"stream_name":"stdout","time":1241.837948048,"data":"ячейка 10/13 готова\n"}
+,{"stream_name":"stdout","time":1241.880055648,"data":"ячейка 11/13 готова\n"}
+,{"stream_name":"stdout","time":1254.379456581,"data":"ячейка 12/13 готова\n"}
+,{"stream_name":"stdout","time":1476.589322272,"data":"ячейка 13/13 готова\n"}
+,{"stream_name":"stdout","time":1477.716035468,"data":"готово; ячеек с ошибкой: 0\n"}
+,{"stream_name":"stderr","time":1480.036663477,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":1480.036725811,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":1480.19371999,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":1480.193762562,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":1480.953995224,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":1481.456799483,"data":"[NbConvertApp] Writing 503294 bytes to __results__.html\n"}
+]

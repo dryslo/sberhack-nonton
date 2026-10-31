@@ -1,0 +1,25 @@
+# то же, что локально делают make test, make build и make test-api
+name: ci
+on: [push, pull_request]
+
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Тесты API в образе
+        run: docker build -f docker/Dockerfile --target test -t sberhack-forecast-test . && docker run --rm sberhack-forecast-test
+
+      - name: Сборка образа
+        run: docker build -f docker/Dockerfile -t sberhack-forecast .
+
+      - name: Проверка поднятого сервиса (10.10 ТЗ)
+        run: |
+          docker run -d --name forecast -p 8000:8000 sberhack-forecast
+          for i in $(seq 1 60); do curl -sf http://localhost:8000/ready && break; sleep 1; done
+          bash tests/test_api.sh http://localhost:8000
+
+      - name: Логи сервиса при ошибке
+        if: failure()
+        run: docker logs forecast || true

@@ -1,0 +1,11 @@
+# контекст сборки - корень репозитория, в него попадает только то, что нужно образу
+*
+!docker/requirements.txt
+!src/
+!app/
+!model/
+!data/sample_sales.csv
+!data/sample_stock.csv
+!tests/
+**/__pycache__
+**/*.pyc

@@ -1,0 +1,5 @@
+.venv/bin/python kaggle/run.py push 03 --wait
+HTTPSConnectionPool(host='api.kaggle.com', port=443): Max retries exceeded with url: /v1/kernels.KernelsApiService/SaveKernel (Caused by ConnectTimeoutError(<HTTPSConnection(host='api.kaggle.com', port=443) at 0x7491ce4b8110>, 'Connection to api.kaggle.com timed out. (connect timeout=None)'))
+Не прошло: kaggle kernels push. Сообщение Kaggle выше.
+make: *** [Makefile:17: run] Error 1
+exit 2

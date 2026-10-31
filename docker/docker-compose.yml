@@ -1,0 +1,23 @@
+# make up из корня репозитория (docker compose -f docker/docker-compose.yml up -d --build), сервис на http://localhost:8000
+# прогнозы лежат в томе forecast-cache и переживают рестарт
+name: sberhack
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: sberhack-forecast:latest
+    ports:
+      - "8000:8000"
+    environment:
+      DOCS: "1"                          # 0 отключает /docs, /redoc, /solution, /openapi.json, а / отдаёт короткий JSON
+      WORKERS: "2"                       # процессы uvicorn, прогнозы у них общие через /cache
+      MAX_CONCURRENT_PREDICTIONS: "1"    # расчётов одновременно на процесс, POST по полным данным берёт около 1 ГБ
+      MAX_FORECASTS: "20"
+      # ADMIN_TOKEN: "change-me"         # включает POST /model/reload с заголовком X-Admin-Token
+    volumes:
+      - forecast-cache:/cache
+    restart: unless-stopped
+
+volumes:
+  forecast-cache:

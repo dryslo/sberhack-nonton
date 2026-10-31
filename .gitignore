@@ -1,0 +1,22 @@
+# данные организаторов (~550 МБ) не кладём, примеры для API кладём
+data/*.csv
+!data/sample_sales.csv
+!data/sample_stock.csv
+
+# из outputs/ не кладём выборку из данных организаторов для проверки контейнера (make api-input),
+# копии ноутбуков с Kaggle (те же ноутбуки с выводами лежат в notebooks/) и копию model/ из прогона 06_final
+outputs/api_input/
+outputs/kaggle/*/*.ipynb
+outputs/kaggle/06_final/model/
+
+# ТЗ, FAQ и рабочие заметки, только локально
+LOCAL/
+
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+catboost_info/
+
+_LOCAL/
