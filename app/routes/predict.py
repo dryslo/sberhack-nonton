@@ -4,11 +4,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import Response, StreamingResponse
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from ..deps import get_service
 from ..errors import ApiError
-from ..schemas import ErrorResponse, Explanation, ForecastRow
+from ..schemas import ErrorResponse, Explanation, ForecastRow, ForecastSaved
 from ..service import ForecastService, NotFound
 
 router = APIRouter(tags=["прогноз"])
@@ -27,16 +27,22 @@ def headers(service, forecast_id, filename, extra=None):
             "Content-Disposition": f"attachment; filename={filename}", **(extra or {})}
 
 
-@router.post("/predict", summary="Прогноз по загруженным данным", response_class=Response,
-             responses={200: {"content": CSV, "description": "CSV: week, warehouse_name, article, quantity на 9 недель"}, **ERRORS})
+@router.post("/predict", summary="Прогноз по загруженным данным", response_model=ForecastSaved,
+             responses={200: {"content": CSV, "description": "По умолчанию JSON: forecast_id и success после сохранения. "
+                             "При return_csv=true — CSV и идентификатор в заголовке X-Forecast-Id."}, **ERRORS})
 async def predict(service: Service,
                   sales: Annotated[UploadFile, File(description="CSV продаж по дням (формат sales_dataset_hakaton.csv), 180+ дней")],
-                  stock: Annotated[UploadFile, File(description="CSV остатков по дням (формат stock_dataset_hakaton.csv), 180+ дней")]):
+                  stock: Annotated[UploadFile, File(description="CSV остатков по дням (формат stock_dataset_hakaton.csv), 180+ дней")],
+                  return_csv: Annotated[bool, Query(description="Сразу вернуть CSV прогноза и X-Forecast-Id вместо JSON-подтверждения")] = False):
     result = await run_in_threadpool(service.forecast, await sales.read(), await stock.read())
     timing = ", ".join(f"{stage};dur={ms}" for stage, ms in result.timings.items())
-    return Response(result.csv, media_type="text/csv",
-                    headers=headers(service, result.forecast_id, "forecast.csv",
-                                    {"X-Cache": "hit" if result.cache_hit else "miss", "Server-Timing": timing}))
+    response_headers = {"X-Forecast-Id": result.forecast_id, "X-Model-Version": service.model.version,
+                        "X-Cache": "hit" if result.cache_hit else "miss", "Server-Timing": timing}
+    if return_csv:
+        return Response(result.csv, media_type="text/csv",
+                        headers=headers(service, result.forecast_id, "forecast.csv", response_headers))
+    return JSONResponse(ForecastSaved(forecast_id=result.forecast_id, success=True).model_dump(),
+                        headers=response_headers)
 
 
 @router.get("/predict", summary="Прогноз по товару и/или складу", response_class=Response,

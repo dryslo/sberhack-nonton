@@ -14,7 +14,8 @@ POST /predict (sales.csv, stock.csv)
                         predictor.py    ForecastModel.predict, не больше MAX_CONCURRENT_PREDICTIONS расчётов разом
                                         two_stage -> src/forecaster.py: Panel, ансамбль, pipeline.decide
                         store.py        CSV, метаданные и данные для /explain, указатель на последний прогноз
-  ответ: CSV и заголовки X-Forecast-Id, X-Model-Version, X-Cache, Server-Timing
+  ответ: JSON {"forecast_id": "...", "success": true}; при ?return_csv=true — CSV
+         заголовки в обоих режимах: X-Forecast-Id, X-Model-Version, X-Cache, Server-Timing
 
 GET /predict, /predict/all, /explain
   берут из хранилища последний прогноз (или указанный forecast_id): фильтр, весь прогноз потоком, разбор по паре
@@ -38,6 +39,11 @@ GET /predict, /predict/all, /explain
 | `ADMIN_TOKEN` | не задан | включает `POST /model/reload` |
 
 ## routes/
+
+`POST /predict` по умолчанию возвращает JSON с `forecast_id` и `success: true` после расчёта и сохранения.
+Скачать результат можно через `GET /predict/all?forecast_id=...`. Параметр запроса `return_csv=true`
+возвращает CSV сразу, вместе с идентификатором в заголовке `X-Forecast-Id`. Оба режима используют одно хранилище
+и один ключ кэша. Это синхронный расчёт: `success` означает, что прогноз уже сохранён, а не поставлен в очередь.
 
 - `predict.py`: `POST /predict`, `GET /predict` (по товару, складу или паре), `GET /predict/all` (CSV или JSON), `GET /explain`. В ответах с прогнозом есть `X-Forecast-Id` и `X-Model-Version`, POST добавляет `X-Cache` и `Server-Timing` с временем этапов. JSON из `/predict/all` отдаётся потоком кусками по 5000 строк, чтобы не собирать в памяти ответ на 79 101 строку. Тяжёлые вызовы идут через `run_in_threadpool`, поэтому `/health` отвечает и во время долгого расчёта.
 - `system.py`: `/health` (процесс жив), `/ready` (модель загружена), `/model/info` (дата обучения, состав ансамбля, правило решения, метрики бэктеста, версии библиотек), `/model/reload`. Перезагрузка подключается, только если задан `ADMIN_TOKEN`, и проверяет заголовок `X-Admin-Token`. Модель она перечитывает из той же папки и только в том воркере, который принял запрос, поэтому при нескольких воркерах надёжнее рестарт.

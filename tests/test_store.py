@@ -108,22 +108,29 @@ def test_redis_concurrent_writers(redis_server):
     store.close()
 
 
-def test_redis_api_shared_across_restarts(tmp_path, redis_server, sample):
+@pytest.mark.parametrize("return_csv", [False, True])
+def test_redis_api_shared_across_restarts(tmp_path, redis_server, sample, return_csv):
     settings = Settings(model_dir=str(ROOT / "model"), cache_dir=str(tmp_path / "unused"),
                         storage_url="redis://test:6379/0")
     files = {"sales": ("sales.csv", sample[0], "text/csv"), "stock": ("stock.csv", sample[1], "text/csv")}
     with TestClient(create_app(settings)) as client:
         assert client.get("/predict/all").status_code == 404
-        posted = client.post("/predict", files=files)
+        posted = client.post("/predict", params={"return_csv": return_csv}, files=files)
         assert posted.status_code == 200, posted.text
         assert posted.headers["x-cache"] == "miss"
         forecast_id = posted.headers["x-forecast-id"]
+        if not return_csv:
+            assert posted.json() == {"forecast_id": forecast_id, "success": True}
+        saved = client.get("/predict/all", params={"forecast_id": forecast_id})
+        assert saved.status_code == 200 and saved.headers["content-type"].startswith("text/csv")
+        if return_csv:
+            assert posted.content == saved.content
     with TestClient(create_app(settings)) as client:
-        repeated = client.post("/predict", files=files)
+        repeated = client.post("/predict", params={"return_csv": return_csv}, files=files)
         assert repeated.status_code == 200 and repeated.headers["x-cache"] == "hit"
         assert repeated.content == posted.content
         full = client.get("/predict/all", params={"forecast_id": forecast_id})
-        assert full.status_code == 200 and full.content == posted.content
+        assert full.status_code == 200 and full.content == saved.content
         assert full.headers["x-forecast-id"] == forecast_id
         rows = client.get("/predict/all", params={"format": "json"}).json()
         row = rows[0]

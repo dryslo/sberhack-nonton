@@ -24,6 +24,9 @@ python3 -m json.tool "$TMP/body"
 
 echo "=== 2. POST /predict ==="
 expect 200 "POST /predict" -X POST "$BASE_URL/predict" -F "sales=@data/sample_sales.csv" -F "stock=@data/sample_stock.csv"
+FORECAST_ID=$(python3 -c "import json,sys; d=json.load(sys.stdin); assert d['success'] is True; assert isinstance(d['forecast_id'], str) and d['forecast_id']; print(d['forecast_id'])" < "$TMP/body")
+echo "  сохранён прогноз: $FORECAST_ID"
+expect 200 "скачивание по forecast_id" "$BASE_URL/predict/all?forecast_id=$FORECAST_ID"
 cp "$TMP/body" "$TMP/forecast.csv"
 echo "  получен файл: $(wc -l < "$TMP/forecast.csv") строк (с заголовком)"
 head -3 "$TMP/forecast.csv"
@@ -47,7 +50,7 @@ cat "$TMP/body"
 echo "=== 6. GET /predict/all?format=csv ==="
 expect 200 "весь прогноз, CSV" "$BASE_URL/predict/all?format=csv"
 echo "  получен файл: $(wc -l < "$TMP/body") строк"
-cmp -s "$TMP/body" "$TMP/forecast.csv" || fail "весь прогноз отличается от ответа POST"
+cmp -s "$TMP/body" "$TMP/forecast.csv" || fail "последний прогноз отличается от скачанного по forecast_id"
 
 echo "=== 7. GET /predict/all?format=json ==="
 expect 200 "весь прогноз, JSON" "$BASE_URL/predict/all?format=json"
@@ -65,8 +68,9 @@ expect 422 "нет файла stock" -X POST "$BASE_URL/predict" -F "sales=@data
 python3 -m json.tool "$TMP/body"
 
 echo "=== 9. Повторный POST отдаётся из хранилища ==="
-curl -s -D "$TMP/headers" -o "$TMP/again.csv" -X POST "$BASE_URL/predict" -F "sales=@data/sample_sales.csv" -F "stock=@data/sample_stock.csv"
+curl -fsS -D "$TMP/headers" -o "$TMP/again.csv" -X POST "$BASE_URL/predict?return_csv=true" -F "sales=@data/sample_sales.csv" -F "stock=@data/sample_stock.csv"
 grep -qi "^x-cache: hit" "$TMP/headers" || fail "повторный POST посчитан заново, а не взят из хранилища"
+grep -qi "^x-forecast-id: $FORECAST_ID" "$TMP/headers" || fail "CSV возвращён с другим forecast_id"
 cmp -s "$TMP/again.csv" "$TMP/forecast.csv" || fail "повторный POST дал другой ответ"
 echo "  ок: X-Cache: hit, ответ тот же байт в байт"
 

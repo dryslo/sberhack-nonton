@@ -74,7 +74,7 @@ make down
 
 | Метод и путь | Что делает |
 |---|---|
-| `POST /predict` | принимает `sales` и `stock` (CSV в формате организаторов, от 180 дней), возвращает CSV прогноза на 9 недель с понедельника недели, следующей за последней датой в `sales` |
+| `POST /predict` | принимает `sales` и `stock` (CSV в формате организаторов, от 180 дней), сохраняет прогноз на 9 недель и возвращает JSON с `forecast_id` и `success`; с `?return_csv=true` возвращает CSV и `X-Forecast-Id` |
 | `GET /predict?article=&warehouse=` | прогноз по товару, складу или паре (нужен хотя бы один параметр) |
 | `GET /predict/all?format=csv\|json` | весь прогноз, отдаётся потоком |
 | `GET /explain?article=&warehouse=` | разбор прогноза по паре: вероятность и порог по неделям, сырое и целое количество, главные признаки по SHAP |
@@ -84,7 +84,11 @@ make down
 | `/`, `/docs`, `/redoc`, `/solution` | стартовая страница, Swagger UI, ReDoc и обзор решения; включаются флагом `DOCS`, работают без интернета |
 
 ```bash
-curl -X POST http://localhost:8000/predict -F "sales=@data/sample_sales.csv" -F "stock=@data/sample_stock.csv" -o forecast.csv
+curl -X POST http://localhost:8000/predict -F "sales=@data/sample_sales.csv" -F "stock=@data/sample_stock.csv"
+# Ответ: {"forecast_id":"...","success":true}. Подставьте полученный forecast_id:
+curl "http://localhost:8000/predict/all?forecast_id=..." -o forecast.csv
+# Сразу получить CSV и идентификатор в заголовке X-Forecast-Id:
+curl -D headers.txt -X POST "http://localhost:8000/predict?return_csv=true" -F "sales=@data/sample_sales.csv" -F "stock=@data/sample_stock.csv" -o forecast.csv
 curl "http://localhost:8000/predict?article=char_article_391"                             # товар на всех складах
 curl "http://localhost:8000/predict?warehouse=warehouse_name_3"                           # все товары склада
 curl "http://localhost:8000/predict?article=char_article_391&warehouse=warehouse_name_3"  # одна пара

@@ -53,6 +53,11 @@ class ModelInfo(BaseModel):
     config: dict[str, Any] | None = None
 
 
+class ForecastSaved(BaseModel):
+    forecast_id: str
+    success: bool
+
+
 class ForecastRow(BaseModel):
     week: str
     warehouse_name: str

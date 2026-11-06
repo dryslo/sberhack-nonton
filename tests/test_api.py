@@ -28,7 +28,7 @@ def api(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def posted(api, sample):
-    r = api.post("/predict", files=files(*sample))
+    r = api.post("/predict", params={"return_csv": True}, files=files(*sample))
     assert r.status_code == 200, r.text
     return r
 
@@ -69,9 +69,36 @@ def test_predict_format(posted, sample):
 
 
 def test_predict_repeat_is_cached_and_identical(api, posted, sample):
-    again = api.post("/predict", files=files(*sample))
+    again = api.post("/predict", params={"return_csv": True}, files=files(*sample))
     assert again.status_code == 200 and again.headers["x-cache"] == "hit"
     assert again.content == posted.content and again.headers["x-forecast-id"] == posted.headers["x-forecast-id"]
+
+
+@pytest.mark.parametrize("params", [{}, {"return_csv": False}])
+def test_predict_confirmation_and_download(tmp_path, sample, params):
+    with client_for(tmp_path) as client:
+        posted = client.post("/predict", params=params, files=files(*sample))
+        assert posted.status_code == 200, posted.text
+        forecast_id = posted.headers["x-forecast-id"]
+        assert posted.json() == {"forecast_id": forecast_id, "success": True}
+        assert posted.headers["content-type"].startswith("application/json")
+        assert "content-disposition" not in posted.headers
+        assert posted.headers["x-cache"] == "miss"
+        assert "predict;dur=" in posted.headers["server-timing"]
+        saved = client.get("/predict/all", params={"forecast_id": forecast_id})
+        assert saved.status_code == 200 and saved.headers["content-type"].startswith("text/csv")
+        assert sorted(csv(saved).week.unique()) == WEEKS
+        repeated = client.post("/predict", files=files(*sample))
+        assert repeated.json() == posted.json() and repeated.headers["x-cache"] == "hit"
+        direct = client.post("/predict", params={"return_csv": True}, files=files(*sample))
+        assert direct.status_code == 200 and direct.content == saved.content
+        assert direct.headers["x-forecast-id"] == forecast_id and direct.headers["x-cache"] == "hit"
+        assert direct.headers["content-disposition"] == "attachment; filename=forecast.csv"
+
+
+def test_predict_invalid_return_csv(api, sample):
+    response = api.post("/predict", params={"return_csv": "invalid"}, files=files(*sample))
+    assert response.status_code == 422 and response.json()["code"] == "VALIDATION_ERROR"
 
 
 def test_get_filters(api, posted):
@@ -156,7 +183,7 @@ def test_baseline_model(tmp_path, sample):
     with TestClient(create_app(Settings(model_dir=str(model), cache_dir=str(tmp_path / "cache")))) as c:
         info = c.get("/model/info").json()
         assert info["kind"] == "baseline"
-        r = c.post("/predict", files=files(*sample))
+        r = c.post("/predict", params={"return_csv": True}, files=files(*sample))
         assert r.status_code == 200 and sorted(csv(r).week.unique()) == WEEKS
         assert r.headers["x-model-version"] == info["version"]
         df = csv(r)
@@ -169,6 +196,10 @@ def test_docs_on(api):
     assert "/static/swagger-ui-bundle.js" in api.get("/docs").text
     assert "/static/redoc.standalone.js" in api.get("/redoc").text
     assert "/predict" in api.get("/openapi.json").json()["paths"]
+    operation = api.get("/openapi.json").json()["paths"]["/predict"]["post"]
+    flag = next(p for p in operation["parameters"] if p["name"] == "return_csv")
+    assert flag["in"] == "query" and flag["schema"]["default"] is False
+    assert set(operation["responses"]["200"]["content"]) == {"application/json", "text/csv"}
 
 
 def test_docs_off(tmp_path):

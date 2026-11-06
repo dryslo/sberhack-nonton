@@ -65,7 +65,7 @@ api-input:  ## последние 180 дней всех товаров в output
 	$(PY) tests/make_api_input.py full
 
 check-container: api-input  ## сравнить прогноз сервиса по 180 дням с submission/submission.csv
-	curl -sf -X POST $(URL)/predict -F "sales=@outputs/api_input/sales_last180.csv" \
+	curl -sf -X POST "$(URL)/predict?return_csv=true" -F "sales=@outputs/api_input/sales_last180.csv" \
 	    -F "stock=@outputs/api_input/stock_last180.csv" -o outputs/api_input/forecast_container.csv
 	cmp outputs/api_input/forecast_container.csv submission/submission.csv && echo "прогноз контейнера совпадает с submission/submission.csv"
 
