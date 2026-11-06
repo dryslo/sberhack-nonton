@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse, Response, StreamingResponse
+from fastapi.responses import Response, StreamingResponse
 
 from ..deps import get_service
 from ..errors import ApiError
@@ -63,8 +63,8 @@ async def predict_all(service: Service, format: Annotated[str, Query(description
     if format not in ("csv", "json"):
         raise ApiError(400, "BAD_REQUEST", "Параметр format должен быть csv или json")
     if format == "csv":
-        forecast_id, path = service.csv_path(forecast_id)
-        return FileResponse(path, media_type="text/csv", headers=headers(service, forecast_id, "full_forecast.csv"))
+        forecast_id, data = await run_in_threadpool(service.csv, forecast_id)
+        return Response(data, media_type="text/csv", headers=headers(service, forecast_id, "full_forecast.csv"))
     forecast_id, df = await run_in_threadpool(service.frame, forecast_id)
 
     # JSON отдаём кусками, без сборки всего ответа в памяти

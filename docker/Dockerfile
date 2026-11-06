@@ -24,6 +24,8 @@ WORKDIR /app
 COPY src/ src/
 COPY app/ app/
 COPY model/ model/
+# LightGBM хранит размеры деревьев в байтах: CRLF после checkout на Windows нарушает смещения.
+RUN python -c "from pathlib import Path; [p.write_bytes(p.read_bytes().replace(b'\r\n', b'\n')) for p in Path('model').glob('*.txt')]"
 COPY data/sample_sales.csv data/sample_stock.csv data/
 USER app
 EXPOSE 8000
@@ -34,7 +36,7 @@ CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers
 
 FROM runtime AS test
 USER root
-RUN pip install pytest==9.2.0 httpx==0.28.1
+RUN pip install pytest==9.2.0 httpx==0.28.1 fakeredis==2.40.0
 COPY tests/ tests/
 USER app
 CMD ["python", "-m", "pytest", "-q", "tests"]

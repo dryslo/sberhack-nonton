@@ -1,0 +1,13 @@
+HTTP/1.1 100 Continue
+
+HTTP/1.1 200 OK
+date: Fri, 06 Nov 2026 20:33:35 GMT
+server: uvicorn
+x-forecast-id: 4a58f936e234a24d
+x-model-version: 064a34d7ff11
+content-disposition: attachment; filename=forecast.csv
+x-cache: hit
+server-timing: total;dur=3.6
+content-length: 145865
+content-type: text/csv; charset=utf-8
+

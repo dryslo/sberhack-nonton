@@ -5,7 +5,7 @@ NB ?=
 IMAGE ?= sberhack-forecast
 URL ?= http://localhost:8000
 COMPOSE = docker compose -f docker/docker-compose.yml
-DEV = jupyter nbconvert matplotlib seaborn kaggle pytest httpx
+DEV = jupyter nbconvert matplotlib seaborn kaggle pytest httpx fakeredis==2.40.0
 
 .PHONY: help venv test-local check data push run status pull _nb build test up down test-api api-input check-container solution-html
 

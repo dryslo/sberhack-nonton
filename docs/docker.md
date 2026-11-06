@@ -28,8 +28,45 @@ Python 3.13 и версии библиотек модели такие же, к�
 | `MAX_CONCURRENT_PREDICTIONS` | `1` | одновременных расчётов на процесс (полный POST берёт до ~1 ГБ памяти) |
 | `MAX_FORECASTS` | `20` | сколько последних прогнозов хранить |
 | `CACHE_DIR` | `/cache` | хранилище прогнозов (том) |
+| `STORAGE_URL` | `file:///cache` в Compose; иначе не задан | `file:///путь` — диск; `redis://host:6379/0` — Redis; `rediss://host:6379/0` — Redis с TLS. Если не задан, используется `CACHE_DIR` |
 | `MODEL_DIR` | `/app/model` | папка модели, для подмены модели укажите другую |
 | `ADMIN_TOKEN` | не задан | если задан, появляется `POST /model/reload` с заголовком `X-Admin-Token` |
+
+### Выбор хранилища
+
+Оба хранилища реализуют абстрактный адаптер `ForecastStore`: `LocalForecastStore` и `RedisForecastStore`.
+В них сохраняются CSV, метаданные, данные для `/explain` и указатель на последний прогноз.
+`MAX_FORECASTS` ограничивает число сохранённых прогнозов в обоих режимах. API и ключ кэша не меняются.
+
+Локально: путь в ссылке относится к файловой системе контейнера. Проброс каталога сохраняет прогнозы на диске хоста:
+
+```sh
+docker run -p 8000:8000 --mount type=bind,src=/absolute/path/forecasts,dst=/cache -e STORAGE_URL=file:///cache sberhack-forecast
+```
+
+Каталог хоста должен быть доступен для записи пользователю контейнера с UID 10001.
+Без `STORAGE_URL` продолжает работать прежняя настройка `CACHE_DIR` и существующий формат файлов.
+Compose по умолчанию использует `file:///cache` и именованный том `forecast-cache`.
+
+Удалённо: передайте адрес уже запущенного Redis, доступного из контейнера:
+
+```sh
+docker run -p 8000:8000 -e STORAGE_URL=redis://redis-host:6379/0 sberhack-forecast
+```
+
+Для Compose задайте `STORAGE_URL` в окружении или в файле, переданном через `--env-file`:
+
+```sh
+docker compose --env-file storage.env -f docker/docker-compose.yml up -d --build
+```
+
+Содержимое `storage.env`: `STORAGE_URL=redis://redis-host:6379/0`.
+Ссылка с авторизацией: `redis://username:password@redis-host:6379/0`; для TLS используйте `rediss://`.
+Специальные символы в имени и пароле должны быть URL-кодированы.
+Все экземпляры API с одной базой Redis используют общие прогнозы (префикс ключей `forecast-store:`).
+Запись прогноза и удаление старых записей выполняются одной транзакцией.
+В режиме Redis прогнозы не записываются в `/cache`; сохранность после перезапуска самого Redis зависит от его настроек AOF/RDB.
+Переключение `STORAGE_URL` не переносит существующие прогнозы между хранилищами.
 
 ## requirements.txt
 

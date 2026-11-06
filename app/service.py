@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .predictor import load_model
-from .store import ForecastStore
+from .store import ForecastStore, create_store
 from .validators import read_csv, validate
 
 log = logging.getLogger("forecast")
@@ -48,10 +48,10 @@ class Timer:
 
 
 class ForecastService:
-    def __init__(self, model_dir, cache_dir, keep=20, max_concurrent=1):
+    def __init__(self, model_dir, cache_dir, keep=20, max_concurrent=1, storage_url=""):
         self.model_dir = Path(model_dir)
         self.model = load_model(self.model_dir)
-        self.store = ForecastStore(cache_dir, keep)
+        self.store: ForecastStore = create_store(storage_url, cache_dir, keep)
         self._slots = threading.BoundedSemaphore(max_concurrent)
 
     def reload(self) -> str:
@@ -89,13 +89,16 @@ class ForecastService:
         forecast_id = forecast_id or self.store.latest()
         if forecast_id is None:
             raise NotFound("Прогноза ещё нет: сначала POST /predict с файлами sales и stock", "NO_FORECAST")
-        if self.store.csv_path(forecast_id) is None:
+        if not self.store.exists(forecast_id):
             raise NotFound(f"Нет прогноза {forecast_id} (возможно, удалён как старый)", "NO_FORECAST")
         return forecast_id
 
-    def csv_path(self, forecast_id=None):
+    def csv(self, forecast_id=None):
         forecast_id = self._resolve(forecast_id)
-        return forecast_id, self.store.csv_path(forecast_id)
+        data = self.store.csv(forecast_id)
+        if data is None:
+            raise NotFound(f"Нет прогноза {forecast_id} (возможно, удалён как старый)", "NO_FORECAST")
+        return forecast_id, data
 
     def frame(self, forecast_id=None):
         forecast_id = self._resolve(forecast_id)

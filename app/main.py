@@ -30,13 +30,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def lifespan(app):
         try:
             app.state.service = ForecastService(settings.model_dir, settings.cache_dir, settings.max_forecasts,
-                                                settings.max_concurrent)
+                                                settings.max_concurrent, settings.storage_url)
             log.info("модель %s %s загружена", app.state.service.model.kind, app.state.service.model.version)
         except Exception as e:
             app.state.service = None
             app.state.load_error = f"{type(e).__name__}: {e}"
             log.exception("модель не загрузилась")
-        yield
+        try:
+            yield
+        finally:
+            if app.state.service is not None:
+                app.state.service.store.close()
 
     app = FastAPI(title="Прогноз продаж: склад × товар", description=DESCRIPTION, version="1.0.0", lifespan=lifespan,
                   docs_url=None, redoc_url=None, openapi_url="/openapi.json" if settings.docs else None)

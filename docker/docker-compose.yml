@@ -14,6 +14,7 @@ services:
       WORKERS: "2"                       # процессы uvicorn, прогнозы у них общие через /cache
       MAX_CONCURRENT_PREDICTIONS: "1"    # расчётов одновременно на процесс, POST по полным данным берёт около 1 ГБ
       MAX_FORECASTS: "20"
+      STORAGE_URL: "${STORAGE_URL:-file:///cache}" # file:///cache или redis://host:6379/0 (rediss:// для TLS)
       # ADMIN_TOKEN: "change-me"         # включает POST /model/reload с заголовком X-Admin-Token
     volumes:
       - forecast-cache:/cache
